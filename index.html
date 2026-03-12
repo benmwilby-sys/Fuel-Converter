@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Sync: Lbs, Kg, L</title>
+    <style>
+        body { font-family: -apple-system, system-ui, sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f0f2f5; }
+        .card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
+        h2 { margin: 0 0 20px 0; color: #1a1a1a; text-align: center; font-size: 1.5rem; }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: 600; color: #555; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #e1e1e1; border-radius: 8px; box-sizing: border-box; font-size: 1.1rem; transition: border-color 0.2s; }
+        input:focus { outline: none; border-color: #007bff; background-color: #f8fbff; }
+        
+        .density-box { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px inset #eee; }
+        .footer-note { font-size: 0.7rem; color: #d9534f; text-align: center; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Fuel Converter</h2>
+
+    <div class="density-box">
+        <label>Fuel Type / Density (kg/L)</label>
+        <select id="fuelPreset" onchange="updateDensity()">
+            <option value="0.800">Jet A-1 (0.800)</option>
+            <option value="0.720">AVGAS (0.720)</option>
+            <option value="0.740">MOGAS (0.740)</option>
+            <option value="custom">Custom...</option>
+        </select>
+        <input type="number" id="density" value="0.800" step="0.001" style="margin-top:8px" oninput="syncFromLBS()">
+    </div>
+
+    <div class="input-group">
+        <label>Pounds (lbs)</label>
+        <input type="number" id="lbs" placeholder="0.00" oninput="syncFromLBS()">
+    </div>
+
+    <div class="input-group">
+        <label>Kilograms (kg)</label>
+        <input type="number" id="kg" placeholder="0.00" oninput="syncFromKG()">
+    </div>
+
+    <div class="input-group">
+        <label>Litres (L)</label>
+        <input type="number" id="litres" placeholder="0.00" oninput="syncFromL()">
+    </div>
+
+    <p class="footer-note">
+        WARNING: VERIFY DENSITY AND CONVERSIONS <br>     
+        BEFORE FLIGHT.
+    </p>
+</div>
+
+<script>
+    // Conversion Constants
+    const KG_TO_LBS = 2.20462262;
+    const getDensity = () => parseFloat(document.getElementById('density').value);
+
+    function updateDensity() {
+        const preset = document.getElementById('fuelPreset').value;
+        if (preset !== "custom") {
+            document.getElementById('density').value = preset;
+            syncFromLBS(); // Recalculate based on current lbs
+        }
+    }
+
+    // SYNC FROM POUNDS (LBS)
+    function syncFromLBS() {
+        const lbs = parseFloat(document.getElementById('lbs').value);
+        if (isNaN(lbs)) return clearFields('lbs');
+
+        const kg = lbs / KG_TO_LBS;
+        const litres = kg / getDensity();
+
+        document.getElementById('kg').value = kg.toFixed(2);
+        document.getElementById('litres').value = litres.toFixed(2);
+    }
+
+    // SYNC FROM KILOGRAMS (KG)
+    function syncFromKG() {
+        const kg = parseFloat(document.getElementById('kg').value);
+        if (isNaN(kg)) return clearFields('kg');
+
+        const lbs = kg * KG_TO_LBS;
+        const litres = kg / getDensity();
+
+        document.getElementById('lbs').value = lbs.toFixed(2);
+        document.getElementById('litres').value = litres.toFixed(2);
+    }
+
+    // SYNC FROM LITRES (L)
+    function syncFromL() {
+        const L = parseFloat(document.getElementById('litres').value);
+        if (isNaN(L)) return clearFields('litres');
+        
+        const kg = L * getDensity();
+        const lbs = kg * KG_TO_LBS;
+
+        document.getElementById('kg').value = kg.toFixed(2);
+        document.getElementById('lbs').value = lbs.toFixed(2);
+    }
+
+    function clearFields(except) {
+        const fields = ['lbs', 'kg', 'litres'];
+        fields.forEach(f => {
+            if(f !== except) document.getElementById(f).value = "";
+        });
+    }
+</script>
+
+</body>
+</html>
