@@ -3,13 +3,6 @@
 <head>
     <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-   <link rel="apple-touch-icon"
-       href="icon.png">
-<link rel="icon" type="image/png"
-    href="icon.png">
-   <link rel="shortcut icon" 
-       href="benmwilby-sys.github.io/Fuel-Converter/index.png">
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Sync: Lbs, Kg, L</title>
@@ -25,6 +18,24 @@
         
         .density-box { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px inset #eee; }
         .footer-note { font-size: 0.7rem; color: #d9534f; text-align: center; margin-top: 20px; font-weight: bold; }
+  
+  .clear-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.clear-btn:active {
+    background-color: #f1b0b7;
+}
+
     </style>
 </head>
 <body>
@@ -57,7 +68,9 @@
         <label>Litres (L)</label>
         <input type="number" id="litres" placeholder="0.00" oninput="syncFromL()">
     </div>
-
+  
+    <button type="button" class="clear-btn" onclick="fullClear()">Clear All Fields</button>
+    
     <p class="footer-note">
         WARNING: VERIFY DENSITY AND CONVERSIONS <br>     
         BEFORE FLIGHT.
@@ -118,6 +131,13 @@
         fields.forEach(f => {
             if(f !== except) document.getElementById(f).value = "";
         });
+    }
+
+    function fullClear() {
+    // This targets every input on the page and wipes                 it blank
+    document.getElementById('lbs').value = "";
+    document.getElementById('kg').value = "";
+    document.getElementById('litres').value = "";
     }
 </script>
 
